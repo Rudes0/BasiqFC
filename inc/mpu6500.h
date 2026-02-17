@@ -11,11 +11,11 @@
 #define MPU6500_address 0x68
 
 // ---------------------------------------
-// const Calibration data
+// MPU6500 Accelerometer calibration values
 // ---------------------------------------
-#define fAccelCalibX 0.009 
-#define fAccelCalibY 0.012
-#define fAccelCalibZ 0.003
+#define fAccelCalibX 0.012 // dla wykresow na 0.039 dla drona 0.012 
+#define fAccelCalibY 0.009 // dla wykresow na 0.030 dla drona 0.009
+#define fAccelCalibZ 0.000
 
 // ---------------------------------------
 // MPU6500 structs
@@ -33,7 +33,7 @@ typedef struct
     float tempOut; // output temperature value
     float fAccelX, fAccelY, fAccelZ; // output accelerometer values
     float fGyroX, fGyroY, fGyroZ; // output gyroscope values
-    float fGyroCalibX, fGyroCalibY, fGyroCalibZ; // accelerometer calibration values 
+    float fGyroCalibX, fGyroCalibY, fGyroCalibZ; // gyroscope calibration values 
     
 }mpu6500;
 

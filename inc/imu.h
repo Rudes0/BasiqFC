@@ -10,9 +10,9 @@
 // ---------------------------------------
 // const Calibration data
 // ---------------------------------------
-#define Q_angle 0.001f // tested from 0.001f -> 0.0005f -> 0.0001f and its the best
-#define Q_bias 0.002f // tested from 0.003f t-> 0.002f and its the best
-#define R_measure 0.03f // tested from 0.05f -> 0.04f -> 0.03f and its the best 
+#define Q_angle 0.005f // tested from 0.001f -> 0.0005f -> 0.0001f and its the best
+#define Q_bias 0.003f // tested from 0.003f t-> 0.002f and its the best
+#define R_measure 0.04f // tested from 0.05f -> 0.04f -> 0.03f and its the best 
 
 #define Q_accel 0.001f
 #define R_altitude 0.03f

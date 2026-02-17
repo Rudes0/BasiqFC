@@ -32,8 +32,8 @@ enum state
 int main()
 {
     // settup enums for debugging
-    enum logs LOG = LogsOn; 
-    enum mode MODE = AngleMode;
+    enum logs LOG = LogsOff; 
+    enum mode MODE = RateMode;
 
     // loopTime struct
     loop_time LOOP_TIME =
@@ -107,7 +107,7 @@ int main()
     };
     pid PIDAngleRoll = 
     {
-        .Kp = 1,
+        .Kp = 2,
         .Ki = 0,
         .Kd = 0,
         .antyWindupMax = 100,
@@ -117,7 +117,7 @@ int main()
     };
     pid PIDAnglePitch = 
     {
-        .Kp = 1,
+        .Kp = 2,
         .Ki = 0,
         .Kd = 0,
         .antyWindupMax = 100,
@@ -127,7 +127,7 @@ int main()
     };
     pid PIDYaw = 
     {
-        .Kp = 0.1,
+        .Kp = 0.5,
         .Ki = 0.01,
         .Kd = 0.001,
         .antyWindupMax = 100,
@@ -223,7 +223,6 @@ int main()
                 ONESHOT_writeMotors(&ONESHOT);
             }
             
-
             printf("State not Armed!");
             continue;
         }
@@ -252,19 +251,17 @@ int main()
             PID_calculate(&PIDYaw, INPUT_CONTROL.yaw, IMU.YawRaw);
         }
 
-
         // limit throttle for other calculations to balance quadcopter
         INPUT_CONTROL_LimitThrottle(&INPUT_CONTROL);
         // caluclations for mototrs
-        // printf("PID Roll = %f, PID Pitch = %f, Throttle = %f, PID Yaw = %f ", PIDRoll.output, PIDPitch.output, INPUT_CONTROL.throttle, PIDYaw.output);
-        MMA_calculateOutput(&MMA, PIDRateRoll.output * MIX_mulitplier, PIDRatePitch.output * MIX_mulitplier, INPUT_CONTROL.throttle, PIDYaw.output * MIX_mulitplier);
-        //MMA_calculateOutput(&MMA, 0, 0, INPUT_CONTROL.throttle, 0);
+        MMA_calculateOutput(&MMA, PIDRateRoll.output * MIX_mulitplier , PIDRatePitch.output * MIX_mulitplier , INPUT_CONTROL.throttle, PIDYaw.output * MIX_mulitplier );
         MMA_LimitOutput(&MMA);
         //printf("MMA LB = %f, MMA LF = %f, MMA RB = %f, MMA RF = %f ", MMA.motorLB, MMA.motorLF, MMA.motorRB, MMA.motorRF);
-        ONESHOT_CalculateOutput(&ONESHOT, &MMA); 
-        //printf("MAIN ONESHOT\n");
-        //printf("ONESHOT LB = %d; ONESHOT LF = %d; ONESHOT RB = %d; ONESHOT RF = %d\n", ONESHOT.fillLB, ONESHOT.fillLF, ONESHOT.fillRB, ONESHOT.fillRF);
-        //printf("imu.rollkal = %f, PIDRoll.output = %f, imu.pitchkal = %f, PIDPitch.currError = %f, PIDPItch.output = %f, MMA LB = %f, MMA LF = %f, MMA RB = %f, MMA RF = %f \n",IMU.RollKal,PIDRateRoll.output, IMU.PitchKal, PIDRatePitch.currError, PIDRatePitch.output, MMA.motorLB, MMA.motorLF, MMA.motorRB, MMA.motorRF);
+        ONESHOT_CalculateOutput(&ONESHOT, &MMA);
+        //printf("SetPitch = %f, SetRoll = %f, IMUpitch = %f, IMUroll = %f, PIDpitchoutput = %f, PIDrolloutput = %f, OS LB = %d, OS LF = %d, OS RB = %d, OS RF = %d \n", INPUT_CONTROL.pitch, INPUT_CONTROL.roll, IMU.PitchKal, IMU.RollKal, PIDAnglePitch.output, PIDAngleRoll.output, ONESHOT.fillLB, ONESHOT.fillLF, ONESHOT.fillRB, ONESHOT.fillRF); 
+        printf("ONESHOT LB = %d; ONESHOT LF = %d; ONESHOT RB = %d; ONESHOT RF = %d\n", ONESHOT.fillLB, ONESHOT.fillLF, ONESHOT.fillRB, ONESHOT.fillRF);
+        //printf("imu.rollkal = %f, PIDRoll.output = %f, imu.pitchkal = %f, PIDPitch.currError = %f, PIDPItch.output = %f, ONESHOT LB = %d; ONESHOT LF = %d; ONESHOT RB = %d; ONESHOT RF = %d\n",IMU.RollKal,PIDRateRoll.output, IMU.PitchKal, PIDRatePitch.currError, PIDRatePitch.output, ONESHOT.fillLB, ONESHOT.fillLF, ONESHOT.fillRB, ONESHOT.fillRF);
+        //printf("Yaw setpoint = %f, Yaw IMU = %f yaw PID = %f\n",INPUT_CONTROL.yaw, IMU.YawRaw, PIDYaw.output);
         if(LOG == LogsOff){
             ONESHOT_writeMotors(&ONESHOT);
         }

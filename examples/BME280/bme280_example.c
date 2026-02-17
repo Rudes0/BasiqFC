@@ -12,9 +12,9 @@ int main(void)
     uint32_t sample_idx = 0;
     bme280 BME280 = 
     {
-        .I2cBME280Port = i2c0,
-        .BME280SdaPin = 4,
-        .BME280SclPin = 5 
+        .I2cBME280Port = i2c1,
+        .BME280SdaPin = 10,
+        .BME280SclPin = 11 
     };
     BME280_Init(&BME280);
     BME280_readCalibrationData(&BME280);
@@ -26,9 +26,8 @@ int main(void)
         BME280_ReadData(&BME280);
         BME280_CalculateAltitude(&BME280);
         float time_s = sample_idx * 0.004f;
-        printf("%lu;%.6f;%.3f;\n",
+        printf("%lu;%.3f;\n",
                (unsigned long)sample_idx,
-               time_s,
                BME280.altitudeM);
         sample_idx++;
         while(time_us_32() - currentTime < timeloop);

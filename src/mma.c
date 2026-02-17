@@ -7,6 +7,7 @@ void MMA_calculateOutput(mma* MMA, float roll, float pitch, float throttle, floa
     MMA->motorLB = throttle + roll + pitch - yaw;
     MMA->motorLF = throttle + roll - pitch + yaw;
 
+
 }
 
 void MMA_LimitOutput(mma* MMA)

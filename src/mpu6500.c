@@ -14,7 +14,13 @@ This driver assumes you are using only one BME280 module as it wasnt tested with
 // ---------------------------------------
 void MPU6500_Init(mpu6500* MPU6500) // initialization of MPU6500 module 
 {   
+    
     MPU6500_I2cInnit(MPU6500);
+    MPU6500_writeSingleData(0x6B, 0x80, MPU6500);
+    sleep_ms(100);
+
+    MPU6500_writeSingleData(0x6B, 0x01, MPU6500);
+    sleep_ms(10);
     if(!(MPU6500_I2cScanner(MPU6500)))
     {
         while(1)
@@ -27,11 +33,12 @@ void MPU6500_Init(mpu6500* MPU6500) // initialization of MPU6500 module
     MPU6500_writeSingleData(0x6B, 0x01, MPU6500); // waking up the MPU and setting internal oscilator to best available
     MPU6500_writeSingleData(0x6C, 0x00, MPU6500); // ensuring that all axis are working 
     MPU6500_writeSingleData(0x19, 0x00, MPU6500); // set the sample rate to 1000Hz 1Khz / 1 = 1kHz
-    MPU6500_writeSingleData(0x1A, 0x03, MPU6500); // DLPF 
+    MPU6500_writeSingleData(0x1A, 0x05, MPU6500); // DLPF 
     MPU6500_writeSingleData(0x1B, 0x08, MPU6500); // range +/-500 dps
     MPU6500_writeSingleData(0x1C, 0x10, MPU6500); // range +/- 8g
-    MPU6500_writeSingleData(0x1D, 0x03, MPU6500); // DLPF 
-    printf("vlaue undewr register 0x1C = %d", MPU6500_ReadRegister(0x1C, MPU6500));
+    MPU6500_writeSingleData(0x1D, 0x05, MPU6500); // DLPF 
+    printf("value under register 0x1C = %d", MPU6500_ReadRegister(0x1C, MPU6500));
+    printf("Begining calibration samples");
     MPU6500_CalibrationSamples(MPU6500);
     printf("Calibration finieshed!\n");
 }
@@ -69,7 +76,7 @@ void MPU6500_CalibrateData(mpu6500* MPU6500)
 
     MPU6500->fAccelX -= fAccelCalibX;
     MPU6500->fAccelY -= fAccelCalibY;
-    MPU6500->fAccelZ += fAccelCalibZ;
+    MPU6500->fAccelZ -= fAccelCalibZ;
 }
 
 // ---------------------------------------
@@ -77,7 +84,7 @@ void MPU6500_CalibrateData(mpu6500* MPU6500)
 // ---------------------------------------
 void MPU6500_I2cInnit(mpu6500* MPU6500) // initialiaze MPU6500 i2c communication protocol 
 {
-    i2c_init(MPU6500->I2cMPU6500Port, 400 * 1000);
+    i2c_init(MPU6500->I2cMPU6500Port, 100 * 1000);
     gpio_set_function(MPU6500->MPU6500SclPin, GPIO_FUNC_I2C);
     gpio_set_function(MPU6500->MPU6500SdaPin, GPIO_FUNC_I2C);
     gpio_pull_up(MPU6500->MPU6500SclPin);

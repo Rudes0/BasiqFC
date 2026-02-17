@@ -9,9 +9,8 @@ int main(void)
     crsf_data CRSF = 
     {
         .UartCRSFPort = uart0,
-        .UartTxPin = 0,
-        .UartRxPin = 1
-        
+        .UartTxPin = 12,
+        .UartRxPin = 13
     };
     CRSF_Init(&CRSF);
     while(1)

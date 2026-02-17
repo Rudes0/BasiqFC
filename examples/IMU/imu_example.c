@@ -84,16 +84,13 @@ int main()
         compAngleX = 0.93 * (compAngleX + IMU.GyroX * 0.004f) + 0.07 * IMU.RollRaw; // Calculate the angle using a Complimentary filter
         compAngleY = 0.93 * (compAngleY + IMU.GyroY * 0.004f) + 0.07 * IMU.PitchRaw;
         // Exel format
-          printf("%lu;%.4f;%.4f;%.4f;%.4f;%.4f;%.4f;%.4f;%.4f;%.4f; \n",
+          printf("%lu;%.4f;%.4f;%.4f;%.4f;%.4f;%.4f;\n",
             (unsigned long)sample_idx,
-            time_s,
             IMU.RollRaw,
             gyroXangle,
-            compAngleX,
             IMU.RollKal, 
             IMU.PitchRaw,
             gyroYangle,
-            compAngleY,
             IMU.PitchKal
             );
 

@@ -10,9 +10,9 @@ int main()
     set_sys_clock_hz(220000000,true);
     stdio_init_all();
     crsf_data CRSF = {
-        .UartCRSFPort = uart0,
-        .UartTxPin = 12,
-        .UartRxPin = 13
+        .CRSFUartCRSFPort = uart0,
+        .CRSFUartTxPin = 12,
+        .CRSFUartRxPin = 13
     };
     CRSF_Init(&CRSF);
     oneshot Oneshot = {
@@ -21,7 +21,7 @@ int main()
         //.motorRF = 16,
         //.motorRB = 17
     };
-    ONESHOT_initMotors(&Oneshot);
+    ONESHOT_InitMotors(&Oneshot);
 
     while (true) 
     {
@@ -33,7 +33,7 @@ int main()
         printf("ch3 = %d ", Crsf.PWMData[2]);
         printf("ch4 = %d  \n", Crsf.PWMData[3]);
         */
-        Oneshot.fillLF = (CRSF.PWMData[0] * 125) / 1000;
+        Oneshot.fillLF = (CRSF.pwmData[0] * 125) / 1000;
         if(Oneshot.fillLF > 240) Oneshot.fillLF = 240;
         //Oneshot.fillLB = (CRSF.PWMData[1] * 125) / 1000;
         //if(Oneshot.fillLB > 240) Oneshot.fillLB = 240;
@@ -45,7 +45,7 @@ int main()
        // printf("LB = %d ", Oneshot.fillLB);
        //printf("RF = %d ", Oneshot.fillRF);
         //printf("RB = %d  \n", Oneshot.fillRB);
-        ONESHOT_writeMotors(&Oneshot);
+        ONESHOT_WriteMotors(&Oneshot);
         sleep_ms(5);
     }
 }

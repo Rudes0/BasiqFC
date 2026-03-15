@@ -25,7 +25,7 @@ void BME280_Init(bme280* BME280) // initialization of BME280 Module
 {
     BME280_I2cInnit(BME280);
     sleep_ms(10);
-    if(!(BME280_i2cScanner(BME280))) 
+    if(!(BME280_I2cScanner(BME280))) 
     {
         while(1)
         {
@@ -34,9 +34,9 @@ void BME280_Init(bme280* BME280) // initialization of BME280 Module
         }
     }
     
-    BME280_writeSingleData(0xF2,0x00, BME280); // 0b00000000 humidity off 
-    BME280_writeSingleData(0xF4,0x37, BME280); // 0b00110111 oversampling for temperature sensor = 1, oversampling for pressure sensor = 16, mode = normal 
-    BME280_writeSingleData(0xF5,0x10, BME280); // 0b00010000 standby time = 0.5ms, fillter coefficient = 16
+    BME280_WriteSingleData(0xF2,0x00, BME280); // 0b00000000 humidity off 
+    BME280_WriteSingleData(0xF4,0x37, BME280); // 0b00110111 oversampling for temperature sensor = 1, oversampling for pressure sensor = 16, mode = normal 
+    BME280_WriteSingleData(0xF5,0x10, BME280); // 0b00010000 standby time = 0.5ms, fillter coefficient = 16
 
     BME280->PPa = 0;
     BME280->P0Pa = 0;
@@ -47,7 +47,7 @@ void BME280_Init(bme280* BME280) // initialization of BME280 Module
     BME280->altitudeM = 0;
     BME280->altitudeCM = 0; 
 
-    BME280_readCalibrationData(BME280);
+    BME280_ReadCalibrationData(BME280);
     sleep_ms(50); // it needs to be there for some reason but if its not there then altitude is read wrong 
     BME280_CalculateReference(200,BME280);
 }
@@ -56,8 +56,8 @@ void BME280_ReadData(bme280* BME280)
 {
     uint8_t buf[6];
     uint8_t start = 0xF7;
-    i2c_write_blocking(BME280->I2cBME280Port,address, &start, 1, true);
-    i2c_read_blocking(BME280->I2cBME280Port,address, buf, 6, false);
+    i2c_write_blocking(BME280->BME280I2cPort,address, &start, 1, true);
+    i2c_read_blocking(BME280->BME280I2cPort,address, buf, 6, false);
     BME280->adcP = ((int32_t)buf[0] << 12| (int32_t)buf[1] << 4 | (int32_t)buf[2] >> 4);
     BME280->adcT = ((int32_t)buf[3] << 12| (int32_t)buf[4] << 4 | (int32_t)buf[5] >> 4);
     BME280_compensate_T_int32(BME280->adcT);
@@ -71,20 +71,20 @@ void BME280_ReadData(bme280* BME280)
 // ---------------------------------------
 void BME280_I2cInnit(bme280* BME280) // initialization of i2c communication 
 {
-    i2c_init(BME280->I2cBME280Port, 400 * 1000);
+    i2c_init(BME280->BME280I2cPort, 400 * 1000);
     gpio_set_function(BME280->BME280SclPin, GPIO_FUNC_I2C);
     gpio_set_function(BME280->BME280SdaPin, GPIO_FUNC_I2C);
     gpio_pull_up(BME280->BME280SclPin);
     gpio_pull_up(BME280->BME280SdaPin);
 }
 
-uint8_t BME280_i2cScanner(bme280* BME280) // scanning if correct module is being used
+uint8_t BME280_I2cScanner(bme280* BME280) // scanning if correct module is being used
 {
     sleep_ms(1000); // waiting for I2C to set up 
     uint8_t chipID[1];
     uint8_t reg = 0xD0;
-    i2c_write_blocking(BME280->I2cBME280Port,address,&reg,1,true);
-    i2c_read_blocking(BME280->I2cBME280Port,address,&chipID[0],1,false);
+    i2c_write_blocking(BME280->BME280I2cPort,address,&reg,1,true);
+    i2c_read_blocking(BME280->BME280I2cPort,address,&chipID[0],1,false);
     printf("The chip's ID is 0x%X",chipID[0]); 
     if(chipID[0] == 0x60) 
     {
@@ -93,18 +93,18 @@ uint8_t BME280_i2cScanner(bme280* BME280) // scanning if correct module is being
     return 0;
 }
 
-void BME280_writeSingleData(uint8_t reg, uint8_t value,bme280* BME280) // sending single data 
+void BME280_WriteSingleData(uint8_t reg, uint8_t value,bme280* BME280) // sending single data 
 {
     uint8_t data[2] = {reg, value};
-    i2c_write_blocking(BME280->I2cBME280Port,address,data,2,false);
+    i2c_write_blocking(BME280->BME280I2cPort,address,data,2,false);
 }
 
-void BME280_readCalibrationData(bme280* BME280) // reading calibration data needed for temperature and pressure   
+void BME280_ReadCalibrationData(bme280* BME280) // reading calibration data needed for temperature and pressure   
 {
     uint8_t buf[24];
     uint8_t reg = 0x88;
-    i2c_write_blocking(BME280->I2cBME280Port, address, &reg, 1, true);
-    i2c_read_blocking(BME280->I2cBME280Port, address, buf, 24, false);
+    i2c_write_blocking(BME280->BME280I2cPort, address, &reg, 1, true);
+    i2c_read_blocking(BME280->BME280I2cPort, address, buf, 24, false);
     // for temperature calibration
     calib.dig_T1 = (uint16_t)(buf[1] << 8 | buf[0]);
     calib.dig_T2 = (int16_t)(buf[3] << 8 | buf[2]);
@@ -131,8 +131,8 @@ void BME280_CalculateReference(uint8_t NRef,bme280* BME280) // calculating refer
     {
         uint8_t buf[6];
         uint8_t reg = 0xF7;
-        i2c_write_blocking(BME280->I2cBME280Port, address, &reg, 1, true);
-        if(i2c_read_blocking(BME280->I2cBME280Port, address, buf, 6, false) != 6) // repeat if couldnt read 
+        i2c_write_blocking(BME280->BME280I2cPort, address, &reg, 1, true);
+        if(i2c_read_blocking(BME280->BME280I2cPort, address, buf, 6, false) != 6) // repeat if couldnt read 
         {
             NRef--;
             continue;
@@ -186,12 +186,12 @@ uint32_t BME280_compensate_P_int64(int32_t adc_P) // formula compensating the pr
 
 void BME280_CalculateAltitude(bme280* BME280)
 {
-    BME280->altitudeM = BME280_calculateAltitudeTaylor((float)BME280->PPa, (float)BME280->P0Pa);
+    BME280->altitudeM = BME280_CalculateAltitudeTaylor((float)BME280->PPa, (float)BME280->P0Pa);
     BME280->altitudeCM = (int32_t)(BME280->altitudeM * 100.0f);
 }
 
 // to raczej usunac nie ma sensu tego w ten sposob robic  i lepiej policzyc to normalnie ze wzoru i z math.h
-float BME280_calculateAltitudeTaylor(float P_Pa, float P0_Pa) // altitude aproximation with Taylor series  
+float BME280_CalculateAltitudeTaylor(float P_Pa, float P0_Pa) // altitude aproximation with Taylor series  
 {
     // we are using this formula h = 44330 * [1 - (P / P0)^0.1903]
     // the power operation is expensive to CPU so we are going to aproximate the power function of (P / P0)^0.1903 

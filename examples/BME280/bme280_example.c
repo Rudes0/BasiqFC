@@ -12,12 +12,12 @@ int main(void)
     uint32_t sample_idx = 0;
     bme280 BME280 = 
     {
-        .I2cBME280Port = i2c1,
+        .BME280I2cPort = i2c1,
         .BME280SdaPin = 10,
         .BME280SclPin = 11 
     };
     BME280_Init(&BME280);
-    BME280_readCalibrationData(&BME280);
+    BME280_ReadCalibrationData(&BME280);
     BME280_CalculateReference(200,&BME280);
     sleep_ms(100);
     while(1)

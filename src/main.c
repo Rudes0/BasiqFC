@@ -43,14 +43,14 @@ int main()
         .dt = 0.004f
     };
     // overclocking raspberry pi pico
-    setSystemClockSpeed(&LOOP_TIME);
+    LOOP_TIME_setSystemClockSpeed(&LOOP_TIME);
     stdio_init_all();
 
     enum state State = NotArmed;
     // MPU6500 struct
     mpu6500 MPU6500 = 
     {
-        .I2cMPU6500Port = i2c1,
+        .MPU6500I2cPort = i2c1,
         .MPU6500SclPin = 3,
         .MPU6500SdaPin = 2
     }; 
@@ -58,9 +58,9 @@ int main()
     // CRSF struct 
     crsf_data CRSF = 
     {
-        .UartCRSFPort = uart0,
-        .UartTxPin = 12,
-        .UartRxPin = 13
+        .CRSFUartCRSFPort = uart0,
+        .CRSFUartTxPin = 12,
+        .CRSFUartRxPin = 13
     };
 
     // Oneshot struct
@@ -147,7 +147,7 @@ int main()
     CRSF_Init(&CRSF);
 
     // initialization of Oneshot protocol 
-    ONESHOT_initMotors(&ONESHOT);
+    ONESHOT_InitMotors(&ONESHOT);
 
     // initialization of imu
     IMU_InitializeIMU(&IMU);
@@ -156,11 +156,11 @@ int main()
     IMU_AngleInitializeKalman(&PitchKalmanFilter);
     
     // initialization of pid
-    PID_init(&PIDRateRoll);
-    PID_init(&PIDRatePitch);
-    PID_init(&PIDAngleRoll);
-    PID_init(&PIDAnglePitch);
-    PID_init(&PIDYaw); 
+    PID_Init(&PIDRateRoll);
+    PID_Init(&PIDRatePitch);
+    PID_Init(&PIDAngleRoll);
+    PID_Init(&PIDAnglePitch);
+    PID_Init(&PIDYaw); 
 
     // Calibration of all modules 
     // MPU6500
@@ -170,16 +170,16 @@ int main()
     // IMU
     IMU_AngleGetInput(&IMU, &MPU6500);
     // Kalmans 
-    IMU_AngleSetKalmanInput(IMU.RollRaw,  &RollKalmanFilter);
-    IMU_AngleSetKalmanInput(IMU.PitchRaw,  &PitchKalmanFilter);
+    IMU_AngleSetKalmanInput(IMU.rollRaw,  &RollKalmanFilter);
+    IMU_AngleSetKalmanInput(IMU.pitchRaw,  &PitchKalmanFilter);
     // maybe put it in some other file to manage it 
-    printSystemClockSpeed(&LOOP_TIME);
+    LOOP_TIME_printSystemClockSpeed(&LOOP_TIME);
     
     // while loop 
     while(1)
     {   
         // start of main loop control 
-        startLoop(&LOOP_TIME);
+        LOOP_TIME_startLoop(&LOOP_TIME);
         
         // read IMU data
         MPU6500_ReadData(&MPU6500);
@@ -187,8 +187,8 @@ int main()
 
         IMU_AngleGetInput(&IMU, &MPU6500);
 
-        IMU.RollKal =  IMU_AngleGetKalmanOutput(IMU.GyroX, IMU.RollRaw,  &RollKalmanFilter, LOOP_TIME.dt);
-        IMU.PitchKal =  IMU_AngleGetKalmanOutput(IMU.GyroY, IMU.PitchRaw,  &PitchKalmanFilter, LOOP_TIME.dt);
+        IMU.rollKal =  IMU_AngleGetKalmanOutput(IMU.gyroX, IMU.rollRaw,  &RollKalmanFilter, LOOP_TIME.dt);
+        IMU.pitchKal =  IMU_AngleGetKalmanOutput(IMU.gyroY, IMU.pitchRaw,  &PitchKalmanFilter, LOOP_TIME.dt);
 
         // printf("IMU ROLL = %.4f, IMU PITCH = %.4f\n", IMU.RollKal, IMU.PitchKal);
         // read transmiter data
@@ -196,12 +196,12 @@ int main()
         INPUT_CONTROL_CalculateInput(&INPUT_CONTROL, &CRSF);
         // printf("Input throttle = %f", INPUT_CONTROL.throttle);
         // check if we are ready to fly 
-        if(INPUT_CONTROL_isArmed(&CRSF) && State == NotArmed && INPUT_CONTROL.throttle < 1050)
+        if(INPUT_CONTROL_IsArmed(&CRSF) && State == NotArmed && INPUT_CONTROL.throttle < 1050)
         {
             State = Armed;
         }
         // check if we want to stop flying 
-        if(!(INPUT_CONTROL_isArmed(&CRSF)))
+        if(!(INPUT_CONTROL_IsArmed(&CRSF)))
         {
             State = NotArmed;
             
@@ -210,17 +210,17 @@ int main()
         if(State == NotArmed)
         {
             // Reset all earlier values for again takeoff
-            PID_reset(&PIDAngleRoll);
-            PID_reset(&PIDAnglePitch);
-            PID_reset(&PIDRateRoll);
-            PID_reset(&PIDRatePitch);
-            PID_reset(&PIDYaw);
+            PID_Reset(&PIDAngleRoll);
+            PID_Reset(&PIDAnglePitch);
+            PID_Reset(&PIDRateRoll);
+            PID_Reset(&PIDRatePitch);
+            PID_Reset(&PIDYaw);
             ONESHOT.fillLB = 125;
             ONESHOT.fillLF = 125;
             ONESHOT.fillRB = 125;
             ONESHOT.fillRF = 125;
             if(LOG == LogsOff){
-                ONESHOT_writeMotors(&ONESHOT);
+                ONESHOT_WriteMotors(&ONESHOT);
             }
             
             printf("State not Armed!");
@@ -237,24 +237,24 @@ int main()
         }
         if(MODE == RateMode)
         {
-            PID_calculate(&PIDRateRoll, INPUT_CONTROL.roll, MPU6500.fGyroX);
-            PID_calculate(&PIDRatePitch, INPUT_CONTROL.pitch, MPU6500.fGyroY);
-            PID_calculate(&PIDYaw, INPUT_CONTROL.yaw, IMU.YawRaw);
+            PID_Calculate(&PIDRateRoll, INPUT_CONTROL.roll, MPU6500.fGyroX);
+            PID_Calculate(&PIDRatePitch, INPUT_CONTROL.pitch, MPU6500.fGyroY);
+            PID_Calculate(&PIDYaw, INPUT_CONTROL.yaw, IMU.yawRaw);
         }
         if(MODE == AngleMode) // Needs tests
         {
-            PID_calculate(&PIDAngleRoll, INPUT_CONTROL.roll, IMU.RollKal); 
-            PID_calculate(&PIDAnglePitch, INPUT_CONTROL.pitch, IMU.PitchKal);
+            PID_Calculate(&PIDAngleRoll, INPUT_CONTROL.roll, IMU.rollKal); 
+            PID_Calculate(&PIDAnglePitch, INPUT_CONTROL.pitch, IMU.pitchKal);
 
-            PID_calculate(&PIDRateRoll, PIDAngleRoll.output, MPU6500.fGyroX);
-            PID_calculate(&PIDRatePitch, PIDAnglePitch.output, MPU6500.fGyroY);
-            PID_calculate(&PIDYaw, INPUT_CONTROL.yaw, IMU.YawRaw);
+            PID_Calculate(&PIDRateRoll, PIDAngleRoll.output, MPU6500.fGyroX);
+            PID_Calculate(&PIDRatePitch, PIDAnglePitch.output, MPU6500.fGyroY);
+            PID_Calculate(&PIDYaw, INPUT_CONTROL.yaw, IMU.yawRaw);
         }
 
         // limit throttle for other calculations to balance quadcopter
         INPUT_CONTROL_LimitThrottle(&INPUT_CONTROL);
         // caluclations for mototrs
-        MMA_calculateOutput(&MMA, PIDRateRoll.output * MIX_mulitplier , PIDRatePitch.output * MIX_mulitplier , INPUT_CONTROL.throttle, PIDYaw.output * MIX_mulitplier );
+        MMA_CalculateOutput(&MMA, PIDRateRoll.output * MIX_mulitplier , PIDRatePitch.output * MIX_mulitplier , INPUT_CONTROL.throttle, PIDYaw.output * MIX_mulitplier );
         MMA_LimitOutput(&MMA);
         //printf("MMA LB = %f, MMA LF = %f, MMA RB = %f, MMA RF = %f ", MMA.motorLB, MMA.motorLF, MMA.motorRB, MMA.motorRF);
         ONESHOT_CalculateOutput(&ONESHOT, &MMA);
@@ -263,11 +263,11 @@ int main()
         //printf("imu.rollkal = %f, PIDRoll.output = %f, imu.pitchkal = %f, PIDPitch.currError = %f, PIDPItch.output = %f, ONESHOT LB = %d; ONESHOT LF = %d; ONESHOT RB = %d; ONESHOT RF = %d\n",IMU.RollKal,PIDRateRoll.output, IMU.PitchKal, PIDRatePitch.currError, PIDRatePitch.output, ONESHOT.fillLB, ONESHOT.fillLF, ONESHOT.fillRB, ONESHOT.fillRF);
         //printf("Yaw setpoint = %f, Yaw IMU = %f yaw PID = %f\n",INPUT_CONTROL.yaw, IMU.YawRaw, PIDYaw.output);
         if(LOG == LogsOff){
-            ONESHOT_writeMotors(&ONESHOT);
+            ONESHOT_WriteMotors(&ONESHOT);
         }
         // checkLoop(&LOOP_TIME); 
         // end of loop to match 250Hz
-        endLoop(&LOOP_TIME);
+        LOOP_TIME_endLoop(&LOOP_TIME);
     }
     // get input from mpu6500 
     // IMU calculation 

@@ -10,48 +10,48 @@
 // ---------------------------------------
 // const Calibration data
 // ---------------------------------------
-#define Q_angle 0.005f // tested from 0.001f -> 0.0005f -> 0.0001f and its the best
-#define Q_bias 0.003f // tested from 0.003f t-> 0.002f and its the best
-#define R_measure 0.04f // tested from 0.05f -> 0.04f -> 0.03f and its the best 
+#define Q_angle         0.005f // tested from 0.001f -> 0.0005f -> 0.0001f and its the best
+#define Q_bias          0.003f // tested from 0.003f t-> 0.002f and its the best
+#define R_measure       0.04f // tested from 0.05f -> 0.04f -> 0.03f and its the best 
 
-#define Q_accel 0.001f
-#define R_altitude 0.03f
+#define Q_accel         0.001f
+#define R_altitude      0.03f
 
-#define DEG_TO_RAD (3.142 / 180)
-#define RAD_TO_DEG (180.0f / 3.142)
+#define DEG_TO_RAD      (3.142 / 180)
+#define RAD_TO_DEG      (180.0f / 3.142)
+
 // ---------------------------------------
 // IMU struct
 // ---------------------------------------
 typedef struct 
 {
     // rate of quadcopter 
-    float GyroX, GyroY;
+    float gyroX, gyroY;
     // angles of quadcopter
-    float RollRaw, PitchRaw, YawRaw; 
+    float rollRaw, pitchRaw, yawRaw; 
     // kalman output 
-    float RollKal, PitchKal;  
+    float rollKal, pitchKal;  
 
     // altitude of quadcopter 
-    float Altitude; 
+    float altitude; 
     // velocity of quadcopter 
-    float VelocityRaw;
+    float velocityRaw;
     // acceleration in Z axis of quadcopter
-    float AccelerationRaw;
+    float accelerationRaw;
     // kalman output
-    float VelocityKal;
+    float velocityKal;
 
 }imu;
 
 typedef struct 
 {
-    float Angle , Bias, Rate, P[2][2]; 
+    float angle , bias, rate, p[2][2]; 
 }angleKalmanFilter;
 
 typedef struct 
 {
-    float Altitude , Velocity,  P[2][2]; 
+    float altitude , velocity,  p[2][2]; 
 }velocityKalmanFilter;
-
 
 // ---------------------------------------
 // Public API
@@ -65,6 +65,7 @@ void IMU_VelocityInitializeKalman(velocityKalmanFilter* KalmanFilter);
 void IMU_VelocityGetInput(imu* IMU, const mpu6500* MPU6500, const bme280* BME280); 
 float IMU_VelocityGetKalmanOutput(float Acceleration , float RawAltitude, velocityKalmanFilter* KalmanFilter, float dt);
 void IMU_VelocitySetKalmanInput(float RawValue, velocityKalmanFilter* KalmanFilter);
+
 // ---------------------------------------
 // Internal functions
 // ---------------------------------------

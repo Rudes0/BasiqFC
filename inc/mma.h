@@ -3,6 +3,7 @@
 
 #include "pico/stdlib.h"
 #include "pid.h"
+
 // ---------------------------------------
 // motor mixing algorythm struct
 // ---------------------------------------
@@ -15,6 +16,9 @@ typedef struct
 
 }mma;
 
-void MMA_calculateOutput(mma* MMA, float roll, float pitch, float throttle, float yaw);
+// ---------------------------------------
+// Public API
+// ---------------------------------------
+void MMA_CalculateOutput(mma* MMA, float roll, float pitch, float throttle, float yaw);
 void MMA_LimitOutput(mma* MMA);
 #endif // MMA_

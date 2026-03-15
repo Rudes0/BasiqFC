@@ -16,10 +16,10 @@ void MPU6500_Init(mpu6500* MPU6500) // initialization of MPU6500 module
 {   
     
     MPU6500_I2cInnit(MPU6500);
-    MPU6500_writeSingleData(0x6B, 0x80, MPU6500);
+    MPU6500_WriteSingleData(0x6B, 0x80, MPU6500);
     sleep_ms(100);
 
-    MPU6500_writeSingleData(0x6B, 0x01, MPU6500);
+    MPU6500_WriteSingleData(0x6B, 0x01, MPU6500);
     sleep_ms(10);
     if(!(MPU6500_I2cScanner(MPU6500)))
     {
@@ -30,13 +30,13 @@ void MPU6500_Init(mpu6500* MPU6500) // initialization of MPU6500 module
         }
     }
     
-    MPU6500_writeSingleData(0x6B, 0x01, MPU6500); // waking up the MPU and setting internal oscilator to best available
-    MPU6500_writeSingleData(0x6C, 0x00, MPU6500); // ensuring that all axis are working 
-    MPU6500_writeSingleData(0x19, 0x00, MPU6500); // set the sample rate to 1000Hz 1Khz / 1 = 1kHz
-    MPU6500_writeSingleData(0x1A, 0x05, MPU6500); // DLPF 
-    MPU6500_writeSingleData(0x1B, 0x08, MPU6500); // range +/-500 dps
-    MPU6500_writeSingleData(0x1C, 0x10, MPU6500); // range +/- 8g
-    MPU6500_writeSingleData(0x1D, 0x05, MPU6500); // DLPF 
+    MPU6500_WriteSingleData(0x6B, 0x01, MPU6500); // waking up the MPU and setting internal oscilator to best available
+    MPU6500_WriteSingleData(0x6C, 0x00, MPU6500); // ensuring that all axis are working 
+    MPU6500_WriteSingleData(0x19, 0x00, MPU6500); // set the sample rate to 1000Hz 1Khz / 1 = 1kHz
+    MPU6500_WriteSingleData(0x1A, 0x05, MPU6500); // DLPF 
+    MPU6500_WriteSingleData(0x1B, 0x08, MPU6500); // range +/-500 dps
+    MPU6500_WriteSingleData(0x1C, 0x10, MPU6500); // range +/- 8g
+    MPU6500_WriteSingleData(0x1D, 0x05, MPU6500); // DLPF 
     printf("value under register 0x1C = %d", MPU6500_ReadRegister(0x1C, MPU6500));
     printf("Begining calibration samples");
     MPU6500_CalibrationSamples(MPU6500);
@@ -45,8 +45,8 @@ void MPU6500_Init(mpu6500* MPU6500) // initialization of MPU6500 module
 
 void MPU6500_ReadData(mpu6500* MPU6500) // reading all the needed data and storing in MPU6500 struct 
 {
-        i2c_write_blocking(MPU6500->I2cMPU6500Port, MPU6500_address, &MPU6500->val, 1, true);
-        i2c_read_blocking(MPU6500->I2cMPU6500Port, MPU6500_address, MPU6500->buff, 14, false);
+        i2c_write_blocking(MPU6500->MPU6500I2cPort, MPU6500_address, &MPU6500->val, 1, true);
+        i2c_read_blocking(MPU6500->MPU6500I2cPort, MPU6500_address, MPU6500->buff, 14, false);
 
         MPU6500->accelX = ((MPU6500->buff[0]<<8) | MPU6500->buff[1]);
         MPU6500->accelY = ((MPU6500->buff[2]<<8) | MPU6500->buff[3]);
@@ -84,7 +84,7 @@ void MPU6500_CalibrateData(mpu6500* MPU6500)
 // ---------------------------------------
 void MPU6500_I2cInnit(mpu6500* MPU6500) // initialiaze MPU6500 i2c communication protocol 
 {
-    i2c_init(MPU6500->I2cMPU6500Port, 100 * 1000);
+    i2c_init(MPU6500->MPU6500I2cPort, 100 * 1000);
     gpio_set_function(MPU6500->MPU6500SclPin, GPIO_FUNC_I2C);
     gpio_set_function(MPU6500->MPU6500SdaPin, GPIO_FUNC_I2C);
     gpio_pull_up(MPU6500->MPU6500SclPin);
@@ -97,8 +97,8 @@ uint8_t MPU6500_I2cScanner(mpu6500* MPU6500) // scanning if correct module is be
     sleep_ms(1000); // waiting for I2C to set up 
     uint8_t chipID[1];
     uint8_t reg = 0x75;
-    i2c_write_blocking(MPU6500->I2cMPU6500Port, MPU6500_address, &reg, 1, true);
-    i2c_read_blocking(MPU6500->I2cMPU6500Port, MPU6500_address, &chipID[0], 1, false);
+    i2c_write_blocking(MPU6500->MPU6500I2cPort, MPU6500_address, &reg, 1, true);
+    i2c_read_blocking(MPU6500->MPU6500I2cPort, MPU6500_address, &chipID[0], 1, false);
     printf("The chip's ID is 0x%X",chipID[0]); 
     if(chipID[0] == 0x70) 
     {
@@ -107,17 +107,17 @@ uint8_t MPU6500_I2cScanner(mpu6500* MPU6500) // scanning if correct module is be
     return 0;
 }
 
-static void MPU6500_writeSingleData(uint8_t reg, uint8_t value, mpu6500* MPU6500) // sending single data 
+static void MPU6500_WriteSingleData(uint8_t reg, uint8_t value, mpu6500* MPU6500) // sending single data 
 {
     uint8_t data[2] = {reg, value};
-    i2c_write_blocking(MPU6500->I2cMPU6500Port, MPU6500_address, data, 2, false);
+    i2c_write_blocking(MPU6500->MPU6500I2cPort, MPU6500_address, data, 2, false);
 } 
 
 uint8_t MPU6500_ReadRegister(uint8_t reg, mpu6500* MPU6500) // reading data for debbuging purposes
 {
     uint8_t val;
-    i2c_write_blocking(MPU6500->I2cMPU6500Port, MPU6500_address, &reg, 1, true);
-    i2c_read_blocking(MPU6500->I2cMPU6500Port, MPU6500_address, &val, 1, false);
+    i2c_write_blocking(MPU6500->MPU6500I2cPort, MPU6500_address, &reg, 1, true);
+    i2c_read_blocking(MPU6500->MPU6500I2cPort, MPU6500_address, &val, 1, false);
     return val;
 }
 

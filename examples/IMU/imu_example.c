@@ -10,7 +10,7 @@ int main()
     // velocityKalmanFilter VelocityKalmanFilter;
     imu IMU;
     mpu6500 MPU6500 = {
-        .I2cMPU6500Port = i2c1,
+        .MPU6500I2cPort = i2c1,
         .MPU6500SclPin = 3, // i2c pin
         .MPU6500SdaPin = 2, // i2c pin
     };
@@ -52,13 +52,13 @@ int main()
     IMU_AngleGetInput(&IMU, &MPU6500);
     // IMU_VelocityGetInput(&IMU, &MPU6500, &BME280);
 
-    IMU_AngleSetKalmanInput(IMU.RollRaw,  &RollKalmanFilter);
-    IMU_AngleSetKalmanInput(IMU.PitchRaw,  &PitchKalmanFilter);
+    IMU_AngleSetKalmanInput(IMU.rollRaw,  &RollKalmanFilter);
+    IMU_AngleSetKalmanInput(IMU.pitchRaw,  &PitchKalmanFilter);
     // IMU_VelocitySetKalmanInput(IMU.VelocityRaw, &VelocityKalmanFilter);
-    float gyroXangle = IMU.RollRaw;
-    float gyroYangle = IMU.PitchRaw;
-    float compAngleX = IMU.RollRaw;
-    float compAngleY = IMU.PitchRaw;
+    float gyroXangle = IMU.rollRaw;
+    float gyroYangle = IMU.pitchRaw;
+    float compAngleX = IMU.rollRaw;
+    float compAngleY = IMU.pitchRaw;
     // to this init input data
     // 3* put into initialize maybe? or not idk propably not 
     while(1)
@@ -71,27 +71,27 @@ int main()
 
         IMU_AngleGetInput(&IMU, &MPU6500);
         // IMU_VelocityGetInput(&IMU, &MPU6500, &BME280);
-        IMU.RollKal =  IMU_AngleGetKalmanOutput(IMU.GyroX, IMU.RollRaw,  &RollKalmanFilter, 0.004f);
-        IMU.PitchKal =  IMU_AngleGetKalmanOutput(IMU.GyroY, IMU.PitchRaw,  &PitchKalmanFilter, 0.004f);
+        IMU.rollKal =  IMU_AngleGetKalmanOutput(IMU.gyroX, IMU.rollRaw,  &RollKalmanFilter, 0.004f);
+        IMU.pitchKal =  IMU_AngleGetKalmanOutput(IMU.gyroY, IMU.pitchRaw,  &PitchKalmanFilter, 0.004f);
         // IMU.VelocityKal = IMU_VelocityGetKalmanOutput(IMU.AccelerationRaw, IMU.Altitude, &VelocityKalmanFilter, 0.004f);
         // printf("Roll value [°] %2.2f | Pitch value [°] %2.2f\n", IMU.RollRaw, IMU.PitchRaw);
         // printf("Roll Kalman Value [°] %2.2f | Pitch Kalman value [°] %2.2f\n", IMU.RollKal, IMU.PitchKal);
         float time_s = sample_idx * 0.004f;
         // gyro angle without any filter
-        gyroXangle += IMU.GyroX * 0.004f;
-        gyroYangle += IMU.GyroY * 0.004f;
+        gyroXangle += IMU.gyroX * 0.004f;
+        gyroYangle += IMU.gyroY * 0.004f;
         // complementary filter output 
-        compAngleX = 0.93 * (compAngleX + IMU.GyroX * 0.004f) + 0.07 * IMU.RollRaw; // Calculate the angle using a Complimentary filter
-        compAngleY = 0.93 * (compAngleY + IMU.GyroY * 0.004f) + 0.07 * IMU.PitchRaw;
+        compAngleX = 0.93 * (compAngleX + IMU.gyroX * 0.004f) + 0.07 * IMU.rollRaw; // Calculate the angle using a Complimentary filter
+        compAngleY = 0.93 * (compAngleY + IMU.gyroY * 0.004f) + 0.07 * IMU.pitchRaw;
         // Exel format
           printf("%lu;%.4f;%.4f;%.4f;%.4f;%.4f;%.4f;\n",
             (unsigned long)sample_idx,
-            IMU.RollRaw,
+            IMU.rollRaw,
             gyroXangle,
-            IMU.RollKal, 
-            IMU.PitchRaw,
+            IMU.rollKal, 
+            IMU.pitchRaw,
             gyroYangle,
-            IMU.PitchKal
+            IMU.pitchKal
             );
 
         sample_idx++;

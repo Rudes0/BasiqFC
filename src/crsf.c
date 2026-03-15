@@ -27,9 +27,9 @@ void CRSF_StateMachine(crsf_data* CRSF) // state machine that allows for correct
 
     uint8_t crc8_test = 0; // CRC8 test value that we calculate 
     uint8_t crc8_true = 0; // CRC8 value that comes with a packet of data 
-    while(uart_is_readable(CRSF->UartCRSFPort))
+    while(uart_is_readable(CRSF->CRSFUartCRSFPort))
     {
-        c = uart_getc(CRSF->UartCRSFPort);
+        c = uart_getc(CRSF->CRSFUartCRSFPort);
         switch (CRSF->state)
         {
         case state_wait:
@@ -83,11 +83,11 @@ void CRSF_StateMachine(crsf_data* CRSF) // state machine that allows for correct
 // ---------------------------------------
 void CRSF_UartInit(crsf_data* CRSF) 
 {
-    uart_init(CRSF->UartCRSFPort,CRSF_BAUD_RATE);
-    gpio_set_function(CRSF->UartTxPin,GPIO_FUNC_UART);
-    gpio_set_function(CRSF->UartRxPin,GPIO_FUNC_UART);
-    uart_set_baudrate(CRSF->UartCRSFPort, CRSF_BAUD_RATE);
-    uart_set_format(CRSF->UartCRSFPort, 8, 1, UART_PARITY_NONE);
+    uart_init(CRSF->CRSFUartCRSFPort,CRSF_BAUD_RATE);
+    gpio_set_function(CRSF->CRSFUartTxPin,GPIO_FUNC_UART);
+    gpio_set_function(CRSF->CRSFUartRxPin,GPIO_FUNC_UART);
+    uart_set_baudrate(CRSF->CRSFUartCRSFPort, CRSF_BAUD_RATE);
+    uart_set_format(CRSF->CRSFUartCRSFPort, 8, 1, UART_PARITY_NONE);
 }
 
 void CRSF_UnpackPayloadData(crsf_data* CRSF) // unpacking data to corect channels 
@@ -145,8 +145,8 @@ void CRSF_ChannelMaping(crsf_data* CRSF) // mapping data from CRSF format to PWM
 {
     for(uint8_t i = 0; i < sizeof(CRSF->rawData) / sizeof(CRSF->rawData[0]); i++)
     {
-       CRSF->PWMData[i] = 1500 + ((5 * (CRSF->rawData[i] - 992)) / 8); 
-       if(CRSF->PWMData[i] > 2000) CRSF->PWMData[i] = 2000; // limiting value to 2000 if above (rare but could happend)
-       if(CRSF->PWMData[i] < 1000) CRSF->PWMData[i] = 1000; // limiting value to 1000 if below (rare but could happend)
+       CRSF->pwmData[i] = 1500 + ((5 * (CRSF->rawData[i] - 992)) / 8); 
+       if(CRSF->pwmData[i] > 2000) CRSF->pwmData[i] = 2000; // limiting value to 2000 if above (rare but could happend)
+       if(CRSF->pwmData[i] < 1000) CRSF->pwmData[i] = 1000; // limiting value to 1000 if below (rare but could happend)
     }
 }

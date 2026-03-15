@@ -8,19 +8,19 @@ int main(void)
     stdio_init_all();
     crsf_data CRSF = 
     {
-        .UartCRSFPort = uart0,
-        .UartTxPin = 12,
-        .UartRxPin = 13
+        .CRSFUartCRSFPort = uart0,
+        .CRSFUartTxPin = 12,
+        .CRSFUartRxPin = 13
     };
     CRSF_Init(&CRSF);
     while(1)
     {
         CRSF_StateMachine(&CRSF);
-        printf("ch1 = %d ", CRSF.PWMData[0]);
-        printf("ch2 = %d ", CRSF.PWMData[1]);
-        printf("ch3 = %d ", CRSF.PWMData[2]);
-        printf("ch4 = %d ", CRSF.PWMData[3]);
-        printf("ch5 = %d  \n", CRSF.PWMData[4]);
+        printf("ch1 = %d ", CRSF.pwmData[0]);
+        printf("ch2 = %d ", CRSF.pwmData[1]);
+        printf("ch3 = %d ", CRSF.pwmData[2]);
+        printf("ch4 = %d ", CRSF.pwmData[3]);
+        printf("ch5 = %d  \n", CRSF.pwmData[4]);
         
         sleep_ms(5);
     }

@@ -32,8 +32,8 @@ typedef struct
 // ---------------------------------------
 // Public API
 // ---------------------------------------
-void PID_init(pid* PID);
-void PID_calculate(pid* PID, float InputValue, float ImuMeasurement);
-void PID_reset(pid* PID);
+void PID_Init(pid* PID);
+void PID_Calculate(pid* PID, float InputValue, float ImuMeasurement);
+void PID_Reset(pid* PID);
 
 #endif // PID_

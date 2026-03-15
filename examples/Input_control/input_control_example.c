@@ -9,9 +9,9 @@ int main(void)
     stdio_init_all();
     crsf_data CRSF = 
     {
-        .UartCRSFPort = uart0,
-        .UartTxPin = 12,
-        .UartRxPin = 13
+        .CRSFUartCRSFPort = uart0,
+        .CRSFUartTxPin = 12,
+        .CRSFUartRxPin = 13
         
     };
     input_control INPUT = {0, 0, 0, 0};
@@ -21,7 +21,7 @@ int main(void)
         CRSF_StateMachine(&CRSF);
         INPUT_CONTROL_CalculateInput(&INPUT, &CRSF);
         // simple is armed function should not be copied in to main code 
-        while(!(INPUT_CONTROL_isArmed(&CRSF)))
+        while(!(INPUT_CONTROL_IsArmed(&CRSF)))
         {
             CRSF_StateMachine(&CRSF);
             INPUT_CONTROL_CalculateInput(&INPUT, &CRSF);

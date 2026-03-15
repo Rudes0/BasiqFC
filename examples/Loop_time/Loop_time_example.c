@@ -7,15 +7,15 @@ int main()
         .loopSpeed = 4000,
         .dt = 0.004f
     };
-    setSystemClockSpeed(&LoopTime);
+    LOOP_TIME_setSystemClockSpeed(&LoopTime);
     stdio_init_all();
     
     while(1)
     {
-        startLoop(&LoopTime);
-        printSystemClockSpeed(&LoopTime);
-        checkLoop(&LoopTime);
-        endLoop(&LoopTime);
+        LOOP_TIME_startLoop(&LoopTime);
+        LOOP_TIME_printSystemClockSpeed(&LoopTime);
+        LOOP_TIME_checkLoop(&LoopTime);
+        LOOP_TIME_endLoop(&LoopTime);
         sleep_ms(100); // should't be used here but it is here so that the serial is not bloated with ton of prints
     }
 }

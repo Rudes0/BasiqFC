@@ -1,13 +1,13 @@
 #include "pid.h"
 
-void PID_init(pid* PID)
+void PID_Init(pid* PID)
 {
     PID->prevError = 0; 
     PID->i = 0;
     PID->output = 0;
 }
 
-void PID_calculate(pid* PID, float InputValue, float ImuMeasurement)
+void PID_Calculate(pid* PID, float InputValue, float ImuMeasurement)
 {
     PID->currError = InputValue - ImuMeasurement;
 
@@ -28,7 +28,7 @@ void PID_calculate(pid* PID, float InputValue, float ImuMeasurement)
     PID->prevError = PID->currError;
 }
 
-void PID_reset(pid* PID)
+void PID_Reset(pid* PID)
 {
     PID->currError = 0; 
     PID->prevError = 0;

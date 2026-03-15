@@ -7,12 +7,12 @@
 // ---------------------------------------
 // Defines
 // ---------------------------------------
-#define CRSF_BAUD_RATE 420000
-#define CRSF_MAX_CHANNEL_SIZE 11
+#define CRSF_BAUD_RATE 				420000
+#define CRSF_MAX_CHANNEL_SIZE 		11
 #define CRSF_MAX_NUMBER_OF_CHANNELS 16
-#define CRSF_SYNC 0xC8
-#define CRSF_TYPE_RC  0x16
-#define CRC_POLY 0xD5
+#define CRSF_SYNC 					0xC8
+#define CRSF_TYPE_RC  				0x16
+#define CRC_POLY 					0xD5
 
 // ---------------------------------------
 // state machine enum
@@ -23,25 +23,24 @@ typedef enum
 	state_check_lenght,
 	state_read_payload
 }crsf_state;
+
 // ---------------------------------------
 // CRSF Struct
 // ---------------------------------------
 typedef struct 
 {
-	uart_inst_t* UartCRSFPort;
-	uint8_t UartTxPin;
-	uint8_t UartRxPin;
+	uart_inst_t* CRSFUartCRSFPort;
+	uint8_t 	 CRSFUartTxPin;
+	uint8_t 	 CRSFUartRxPin;
 	
-	uint16_t rawData[16]; // raw data for calculations 
-	uint16_t PWMData[16]; // data for PWM signals to motors
-	uint8_t frame[26]; // max frame size 
-	uint8_t lut[256]; // look-up table for crc8 calculations 
-	crsf_state state; 
-	uint8_t byteID; // current id of byte in packet
-	uint8_t packetLen; // lenght of packet that is recived 
+	uint16_t 	 rawData[16]; // raw data for calculations 
+	uint16_t 	 pwmData[16]; // data for PWM signals to motors
+	uint8_t 	 frame[26]; // max frame size 
+	uint8_t 	 lut[256]; // look-up table for crc8 calculations 
+	crsf_state 	 state; 
+	uint8_t 	 byteID; // current id of byte in packet
+	uint8_t 	 packetLen; // lenght of packet that is recived 
 }crsf_data;
-
-
 
 // ---------------------------------------
 // Public API

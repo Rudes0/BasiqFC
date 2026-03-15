@@ -16,7 +16,7 @@ typedef struct
     // all values are mapped from 1000 to 2000
     float roll; // range from -50° to 50°
     float pitch; // range from -50° to 50°
-    float throttle; // range from -150 cm/s to 150 cm/s  
+    float throttle; // simply added to motors   
     float yaw; // range from -30°/s to 30°/s
 }input_control;
 
@@ -24,7 +24,7 @@ typedef struct
 // Public API
 // ---------------------------------------
 void INPUT_CONTROL_CalculateInput(input_control* INPUT, crsf_data* CRSF);
-uint8_t INPUT_CONTROL_isArmed(crsf_data* CRSF);
+uint8_t INPUT_CONTROL_IsArmed(crsf_data* CRSF);
 void INPUT_CONTROL_LimitThrottle(input_control* INPUT);
 
 #endif // INPUT_CONTROL_

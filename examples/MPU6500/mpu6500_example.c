@@ -6,7 +6,7 @@ int main()
     stdio_init_all();
     
     mpu6500 MPU6500 = {
-        .I2cMPU6500Port = i2c1,
+        .MPU6500I2cPort = i2c1,
         .MPU6500SclPin = 3, // i2c pin
         .MPU6500SdaPin = 2, // i2c pin
     };

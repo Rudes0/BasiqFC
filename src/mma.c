@@ -1,6 +1,6 @@
 #include "mma.h"
 
-void MMA_calculateOutput(mma* MMA, float roll, float pitch, float throttle, float yaw)
+void MMA_CalculateOutput(mma* MMA, float roll, float pitch, float throttle, float yaw)
 {
     MMA->motorRF = throttle - roll - pitch - yaw;
     MMA->motorRB = throttle - roll + pitch + yaw;

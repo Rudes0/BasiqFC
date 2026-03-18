@@ -1,5 +1,8 @@
 #include "mma.h"
 
+// ---------------------------------------
+// Public API
+// ---------------------------------------
 void MMA_CalculateOutput(mma* MMA, float roll, float pitch, float throttle, float yaw)
 {
     MMA->motorRF = throttle - roll - pitch - yaw;
@@ -25,3 +28,6 @@ void MMA_LimitOutput(mma* MMA)
     if(MMA->motorLF < 1100) MMA->motorLF = 1100; 
 }
 
+// ---------------------------------------
+// Internal functions
+// ---------------------------------------

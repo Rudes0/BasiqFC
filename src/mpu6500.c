@@ -55,7 +55,7 @@ void MPU6500_ReadData(mpu6500* MPU6500) // reading all the needed data and stori
         MPU6500->temperature = ((MPU6500->buff[6] << 8) | MPU6500->buff[7]);
         MPU6500->tempOut = (MPU6500->temperature / 333.87f) + 21.0f;
 
-        MPU6500->gyroX = ((MPU6500->buff[8]<<8) | MPU6500->buff[9]);
+        MPU6500->gyroX = ((MPU6500->buff[8]<<8)  | MPU6500->buff[9]);
         MPU6500->gyroY = ((MPU6500->buff[10]<<8) | MPU6500->buff[11]);
         MPU6500->gyroZ = ((MPU6500->buff[12]<<8) | MPU6500->buff[13]);
         

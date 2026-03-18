@@ -83,9 +83,9 @@ void CRSF_StateMachine(crsf_data* CRSF) // state machine that allows for correct
 // ---------------------------------------
 void CRSF_UartInit(crsf_data* CRSF) 
 {
-    uart_init(CRSF->CRSFUartCRSFPort,CRSF_BAUD_RATE);
-    gpio_set_function(CRSF->CRSFUartTxPin,GPIO_FUNC_UART);
-    gpio_set_function(CRSF->CRSFUartRxPin,GPIO_FUNC_UART);
+    uart_init(CRSF->CRSFUartCRSFPort, CRSF_BAUD_RATE);
+    gpio_set_function(CRSF->CRSFUartTxPin, GPIO_FUNC_UART);
+    gpio_set_function(CRSF->CRSFUartRxPin, GPIO_FUNC_UART);
     uart_set_baudrate(CRSF->CRSFUartCRSFPort, CRSF_BAUD_RATE);
     uart_set_format(CRSF->CRSFUartCRSFPort, 8, 1, UART_PARITY_NONE);
 }

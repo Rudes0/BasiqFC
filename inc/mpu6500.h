@@ -50,7 +50,7 @@ void MPU6500_CalibrateData(mpu6500* MPU6500);
 // ---------------------------------------
 void MPU6500_I2cInnit(mpu6500* MPU6500);
 uint8_t MPU6500_I2cScanner(mpu6500* MPU6500);
-static void MPU6500_WriteSingleData(uint8_t reg, uint8_t value,mpu6500* MPU6500);
+static void MPU6500_WriteSingleData(uint8_t reg, uint8_t value, mpu6500* MPU6500);
 uint8_t MPU6500_ReadRegister(uint8_t reg, mpu6500* MPU6500);
 void MPU6500_CalibrationSamples(mpu6500* MPU6500);
 

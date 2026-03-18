@@ -1,5 +1,8 @@
 #include "pid.h"
 
+// ---------------------------------------
+// Public API
+// ---------------------------------------
 void PID_Init(pid* PID)
 {
     PID->prevError = 0; 
@@ -11,7 +14,7 @@ void PID_Calculate(pid* PID, float InputValue, float ImuMeasurement)
 {
     PID->currError = InputValue - ImuMeasurement;
 
-    PID->p =  PID->Kp * PID->currError ;
+    PID->p  = PID->Kp * PID->currError ;
 
     PID->i += PID->Ki * PID->dt * PID->currError;
 
@@ -40,3 +43,7 @@ void PID_Reset(pid* PID)
 
     PID->output = 0;
 }
+
+// ---------------------------------------
+// Internal functions
+// ---------------------------------------

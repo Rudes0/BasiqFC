@@ -1,5 +1,8 @@
 #include "oneshot.h"
 
+// ---------------------------------------
+// Public API
+// ---------------------------------------
 void ONESHOT_InitMotors(oneshot* Oneshot) // initialization of all PWM channels needed for all the motors
 {
     gpio_set_function(Oneshot->motorLF, GPIO_FUNC_PWM);
@@ -53,3 +56,7 @@ void ONESHOT_CalculateOutput(oneshot* Oneshot, mma* MMA)
     Oneshot->fillRF = (MMA->motorRF * 125) / 1000;
     Oneshot->fillRB = (MMA->motorRB * 125) / 1000;
 }
+
+// ---------------------------------------
+// Internal functions
+// ---------------------------------------

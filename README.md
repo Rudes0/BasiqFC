@@ -16,7 +16,7 @@ Because it is for my univesity of technology some things are not necessary for t
 
 Because of that there are probably many mistakes so look at the code with a grain of salt. Nonetheless i hope that this code can be useful for some beginners.
 
-![Quadcopter Photo](Documents/zdjecie_drona.jpg)
+![Quadcopter Photo](Documents/photos/zdjecie_drona.jpg)
 ## Features 
 
 ### Sensors
